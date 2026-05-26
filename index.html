@@ -218,12 +218,11 @@ function radarChartHTML(catPctsMap) {
 }
 
 // ── API call ──────────────────────────────────────────────────────────────────
-async function callAI(dados, catPcts, fs, dec, sen, best, worst, apiKey) {
+async function callAI(dados, catPcts, fs, dec, sen, best, worst) {
   const lines = CATS.map((c,i)=>`${c.name}: ${catPcts[i]!==null?catPcts[i].toFixed(1)+"%":"não avaliado"}`).join("; ");
-  const headers = {"Content-Type":"application/json"};
-  if(apiKey) headers["x-api-key"] = apiKey;
-  const r = await fetch("https://api.anthropic.com/v1/messages",{
-    method:"POST", headers,
+  const r = await fetch("/api/ai", {
+    method:"POST",
+    headers: {"Content-Type":"application/json"},
     body:JSON.stringify({
       model:"claude-sonnet-4-20250514", max_tokens:1000,
       messages:[{role:"user",content:`Você é especialista em recrutamento de SDR da Growth Machine. Feedback profissional em português para envio ao cliente.
@@ -245,8 +244,7 @@ function App() {
   const [fb,     setFb]     = useState("");
   const [status, setStatus] = useState("idle"); // idle | loading | done | error
   const [openSec,setOS]     = useState({exp:true,dis:false,res:false,apr:false,com:false});
-  const [apiKey, setApiKey] = useState("");
-  const [showKey,setShowKey]= useState(false);
+
 
   const setD  = k=>e=>setDados(d=>({...d,[k]:e.target.value}));
   const setA  = (id,v)=>setAns(a=>({...a,[id]:v}));
@@ -271,7 +269,7 @@ function App() {
   const genFeedback = async()=>{
     setStatus("loading");
     try{
-      const text = await callAI(dados,catPcts,fs,dec,sen,best,worst,apiKey);
+      const text = await callAI(dados,catPcts,fs,dec,sen,best,worst);
       setFb(text); setStatus("done");
       return text;
     }catch(e){
@@ -285,7 +283,7 @@ function App() {
     let feedbackText = fb;
     if(!feedbackText.trim()){
       setStatus("loading");
-      try{ feedbackText = await callAI(dados,catPcts,fs,dec,sen,best,worst,apiKey); setFb(feedbackText); setStatus("done"); }
+      try{ feedbackText = await callAI(dados,catPcts,fs,dec,sen,best,worst); setFb(feedbackText); setStatus("done"); }
       catch{ setStatus("error"); feedbackText=""; }
     }
     buildAndOpenReport(feedbackText);
@@ -464,27 +462,12 @@ function App() {
             </div>
           </div>
           <div style={{display:"flex",gap:8,alignItems:"center"}}>
-            <button onClick={()=>setShowKey(k=>!k)}
-              title="Configurar chave de API"
-              style={{padding:"6px 10px",borderRadius:7,border:"1px solid #e2e8f0",background:"white",fontSize:12,color:"#9ca3af",cursor:"pointer"}}>
-              ⚙
-            </button>
             <button onClick={reset}
               style={{padding:"7px 14px",borderRadius:8,border:"1px solid #e2e8f0",background:"white",fontSize:12,color:"#6b7280",cursor:"pointer"}}>
               ↺ Zerar
             </button>
           </div>
         </div>
-
-        {/* API Key settings */}
-        {showKey&&(
-          <div style={{background:"white",borderRadius:12,border:"1px solid #e2e8f0",padding:"14px 18px",marginBottom:10}}>
-            <p style={{fontSize:12,color:"#6b7280",marginBottom:8}}>Chave Anthropic API (necessária para geração de análise com IA neste arquivo HTML):</p>
-            <input type="password" value={apiKey} onChange={e=>setApiKey(e.target.value)}
-              placeholder="sk-ant-..." style={{width:"100%",padding:"8px 10px",borderRadius:7,border:"1px solid #e2e8f0",background:"white",fontSize:13,color:GM.dark}}/>
-            <p style={{fontSize:11,color:"#9ca3af",marginTop:6}}>A chave não é salva. Ficará disponível apenas durante esta sessão.</p>
-          </div>
-        )}
 
         {/* Progress */}
         <div style={{marginBottom:12,padding:"10px 14px",background:"white",borderRadius:10,border:"1px solid #e2e8f0"}}>
