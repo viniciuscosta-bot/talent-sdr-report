@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório Talent SDR — Growth Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Montserrat',system-ui,sans-serif;background:#f1f5f9;}
+  input,textarea,button,select{font-family:inherit;}
+  textarea{outline:none;}
+  input:focus,textarea:focus{outline:2px solid #F96500;outline-offset:1px;}
+  ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:#f1f5f9;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const GM = { orange:"#F96500", dark:"#222223", blue:"#CDD8EB", yellow:"#FF7D12" };
+
+// ── LOGO SVG — path extracted from official brand file ───────────────────────
+const GM_ICON_PATH = "M 307.300781 262.226562 L 133.769531 435.761719 C 133.332031 436.199219 132.914062 436.660156 132.519531 437.140625 C 132.128906 437.621094 131.757812 438.117188 131.414062 438.632812 C 131.070312 439.152344 130.75 439.683594 130.460938 440.230469 C 130.167969 440.777344 129.902344 441.339844 129.664062 441.914062 C 129.425781 442.488281 129.21875 443.070312 129.039062 443.664062 C 128.859375 444.257812 128.707031 444.859375 128.585938 445.46875 C 128.464844 446.078125 128.375 446.691406 128.3125 447.308594 C 128.253906 447.925781 128.222656 448.546875 128.222656 449.167969 C 128.222656 449.789062 128.253906 450.40625 128.3125 451.027344 C 128.375 451.644531 128.464844 452.257812 128.585938 452.867188 C 128.707031 453.476562 128.859375 454.078125 129.039062 454.671875 C 129.21875 455.265625 129.425781 455.847656 129.664062 456.421875 C 129.902344 456.996094 130.167969 457.558594 130.460938 458.105469 C 130.75 458.652344 131.070312 459.183594 131.414062 459.699219 C 131.757812 460.21875 132.128906 460.714844 132.519531 461.195312 C 132.914062 461.675781 133.332031 462.136719 133.769531 462.574219 L 218.253906 547.058594 C 218.617188 547.425781 219 547.773438 219.398438 548.101562 C 219.800781 548.429688 220.214844 548.738281 220.644531 549.023438 C 221.074219 549.3125 221.519531 549.578125 221.972656 549.824219 C 222.429688 550.066406 222.898438 550.289062 223.375 550.488281 C 223.855469 550.683594 224.339844 550.859375 224.835938 551.007812 C 225.332031 551.160156 225.832031 551.285156 226.339844 551.386719 C 226.847656 551.488281 227.359375 551.5625 227.875 551.613281 C 228.386719 551.664062 228.90625 551.691406 229.421875 551.691406 C 229.941406 551.691406 230.457031 551.664062 230.972656 551.613281 C 231.484375 551.5625 231.996094 551.488281 232.503906 551.386719 C 233.011719 551.285156 233.511719 551.160156 234.007812 551.007812 C 234.503906 550.859375 234.992188 550.683594 235.46875 550.488281 C 235.945312 550.289062 236.414062 550.066406 236.871094 549.824219 C 237.328125 549.578125 237.769531 549.3125 238.199219 549.023438 C 238.628906 548.738281 239.042969 548.429688 239.445312 548.101562 C 239.84375 547.773438 240.226562 547.425781 240.59375 547.058594 L 300.324219 487.308594 C 300.914062 486.714844 301.367188 486.035156 301.683594 485.261719 C 302 484.488281 302.15625 483.6875 302.152344 482.851562 L 302.152344 429.421875 C 302.148438 428.824219 302.0625 428.238281 301.886719 427.664062 C 301.714844 427.09375 301.460938 426.558594 301.128906 426.058594 C 300.792969 425.5625 300.398438 425.125 299.933594 424.742188 C 299.472656 424.363281 298.964844 424.058594 298.410156 423.828125 C 297.859375 423.601562 297.285156 423.457031 296.6875 423.398438 C 296.09375 423.335938 295.503906 423.363281 294.914062 423.480469 C 294.328125 423.597656 293.769531 423.792969 293.242188 424.074219 C 292.710938 424.355469 292.234375 424.707031 291.8125 425.128906 L 251.261719 465.664062 C 251.007812 465.910156 250.730469 466.132812 250.433594 466.328125 C 250.136719 466.523438 249.824219 466.6875 249.496094 466.820312 C 249.167969 466.957031 248.828125 467.058594 248.480469 467.125 C 248.132812 467.195312 247.777344 467.230469 247.425781 467.230469 C 247.070312 467.230469 246.71875 467.195312 246.367188 467.125 C 246.019531 467.058594 245.679688 466.957031 245.351562 466.820312 C 245.023438 466.6875 244.710938 466.523438 244.414062 466.328125 C 244.117188 466.132812 243.839844 465.910156 243.589844 465.664062 L 221.8125 443.886719 C 221.5625 443.636719 221.339844 443.359375 221.144531 443.0625 C 220.949219 442.765625 220.78125 442.449219 220.648438 442.121094 C 220.511719 441.792969 220.410156 441.453125 220.34375 441.101562 C 220.273438 440.753906 220.238281 440.398438 220.238281 440.042969 C 220.238281 439.6875 220.273438 439.335938 220.34375 438.984375 C 220.410156 438.636719 220.511719 438.296875 220.648438 437.964844 C 220.78125 437.636719 220.949219 437.324219 221.144531 437.023438 C 221.339844 436.726562 221.5625 436.453125 221.8125 436.199219 L 293.511719 364.539062 L 316.691406 341.339844 C 317.101562 340.929688 317.550781 340.5625 318.03125 340.242188 C 318.515625 339.917969 319.023438 339.648438 319.5625 339.425781 C 320.097656 339.203125 320.652344 339.035156 321.222656 338.921875 C 321.792969 338.808594 322.367188 338.753906 322.945312 338.753906 C 323.527344 338.753906 324.101562 338.808594 324.671875 338.921875 C 325.242188 339.035156 325.796875 339.203125 326.332031 339.425781 C 326.867188 339.648438 327.378906 339.917969 327.863281 340.242188 C 328.34375 340.5625 328.792969 340.929688 329.203125 341.339844 L 352.382812 364.539062 L 424.078125 436.214844 C 424.328125 436.46875 424.550781 436.746094 424.75 437.042969 C 424.945312 437.339844 425.109375 437.65625 425.246094 437.984375 C 425.382812 438.3125 425.484375 438.652344 425.550781 439.003906 C 425.621094 439.351562 425.65625 439.707031 425.65625 440.0625 C 425.65625 440.417969 425.621094 440.769531 425.550781 441.121094 C 425.484375 441.46875 425.382812 441.808594 425.246094 442.140625 C 425.109375 442.46875 424.945312 442.78125 424.75 443.082031 C 424.550781 443.378906 424.328125 443.652344 424.078125 443.90625 L 402.304688 465.664062 C 402.050781 465.910156 401.777344 466.132812 401.480469 466.328125 C 401.183594 466.523438 400.871094 466.6875 400.542969 466.820312 C 400.210938 466.957031 399.875 467.058594 399.527344 467.125 C 399.175781 467.195312 398.824219 467.230469 398.46875 467.230469 C 398.113281 467.230469 397.761719 467.195312 397.414062 467.125 C 397.066406 467.058594 396.726562 466.957031 396.398438 466.820312 C 396.070312 466.6875 395.757812 466.523438 395.460938 466.328125 C 395.164062 466.132812 394.886719 465.910156 394.632812 465.664062 L 354.101562 425.128906 C 353.675781 424.699219 353.199219 424.335938 352.671875 424.050781 C 352.140625 423.761719 351.578125 423.554688 350.984375 423.433594 C 350.394531 423.3125 349.796875 423.28125 349.195312 423.339844 C 348.59375 423.394531 348.015625 423.539062 347.457031 423.769531 C 346.898438 424 346.386719 424.308594 345.917969 424.691406 C 345.453125 425.074219 345.050781 425.519531 344.71875 426.023438 C 344.382812 426.527344 344.128906 427.066406 343.957031 427.648438 C 343.785156 428.226562 343.703125 428.816406 343.707031 429.421875 L 343.707031 482.90625 C 343.703125 483.742188 343.859375 484.542969 344.175781 485.316406 C 344.492188 486.089844 344.945312 486.773438 345.535156 487.363281 L 405.265625 547.113281 C 405.628906 547.480469 406.011719 547.828125 406.414062 548.15625 C 406.8125 548.484375 407.226562 548.792969 407.65625 549.078125 C 408.089844 549.367188 408.53125 549.632812 408.988281 549.878906 C 409.445312 550.121094 409.910156 550.34375 410.390625 550.542969 C 410.867188 550.738281 411.351562 550.914062 411.847656 551.066406 C 412.34375 551.214844 412.84375 551.339844 413.351562 551.441406 C 413.859375 551.542969 414.371094 551.617188 414.886719 551.667969 C 415.402344 551.71875 415.917969 551.746094 416.433594 551.746094 C 416.953125 551.746094 417.46875 551.71875 417.984375 551.667969 C 418.5 551.617188 419.011719 551.542969 419.515625 551.441406 C 420.023438 551.339844 420.527344 551.214844 421.023438 551.066406 C 421.515625 550.914062 422.003906 550.738281 422.480469 550.542969 C 422.960938 550.34375 423.425781 550.121094 423.882812 549.878906 C 424.339844 549.632812 424.78125 549.367188 425.210938 549.078125 C 425.640625 548.792969 426.058594 548.484375 426.457031 548.15625 C 426.855469 547.828125 427.238281 547.480469 427.605469 547.113281 L 512.085938 462.628906 C 512.527344 462.191406 512.941406 461.730469 513.335938 461.25 C 513.730469 460.769531 514.097656 460.273438 514.441406 459.753906 C 514.789062 459.238281 515.105469 458.707031 515.398438 458.160156 C 515.691406 457.613281 515.957031 457.050781 516.191406 456.476562 C 516.429688 455.902344 516.640625 455.320312 516.820312 454.726562 C 517 454.132812 517.148438 453.53125 517.269531 452.921875 C 517.390625 452.3125 517.480469 451.699219 517.542969 451.082031 C 517.605469 450.460938 517.632812 449.84375 517.632812 449.222656 C 517.632812 448.601562 517.605469 447.980469 517.542969 447.363281 C 517.480469 446.746094 517.390625 446.132812 517.269531 445.523438 C 517.148438 444.914062 517 444.3125 516.820312 443.71875 C 516.640625 443.125 516.429688 442.542969 516.191406 441.96875 C 515.957031 441.394531 515.691406 440.832031 515.398438 440.285156 C 515.105469 439.738281 514.789062 439.207031 514.441406 438.6875 C 514.097656 438.171875 513.730469 437.675781 513.335938 437.195312 C 512.941406 436.714844 512.527344 436.253906 512.085938 435.816406 L 338.554688 262.28125 C 338.042969 261.769531 337.507812 261.285156 336.949219 260.824219 C 336.390625 260.367188 335.8125 259.933594 335.210938 259.53125 C 334.609375 259.128906 333.988281 258.757812 333.351562 258.414062 C 332.714844 258.074219 332.0625 257.761719 331.394531 257.484375 C 330.722656 257.207031 330.042969 256.964844 329.351562 256.753906 C 328.660156 256.542969 327.960938 256.363281 327.25 256.222656 C 326.539062 256.082031 325.824219 255.972656 325.105469 255.902344 C 324.386719 255.828125 323.664062 255.792969 322.941406 255.792969 C 322.214844 255.789062 321.496094 255.824219 320.773438 255.894531 C 320.054688 255.964844 319.339844 256.066406 318.628906 256.207031 C 317.917969 256.347656 317.21875 256.519531 316.523438 256.730469 C 315.832031 256.9375 315.152344 257.179688 314.480469 257.457031 C 313.8125 257.730469 313.160156 258.039062 312.519531 258.378906 C 311.878906 258.71875 311.257812 259.089844 310.65625 259.488281 C 310.054688 259.890625 309.472656 260.320312 308.910156 260.777344 C 308.351562 261.234375 307.816406 261.71875 307.300781 262.226562 Z M 307.300781 262.226562";
+const GM_ICON_VIEWBOX = "128 255.742 390 296.258";
+
+const GM_ICON_SVG = (size=42, color="#F96500") => `<svg width="${size}" height="${size}" viewBox="${GM_ICON_VIEWBOX}" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="${color}" d="${GM_ICON_PATH}"/></svg>`;
+
+const GM_ICON_WHITE_SVG = (size=42) => GM_ICON_SVG(size, "white");
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const CATS = [
+  { id:"exp", name:"Experiência", weight:4, color:GM.orange, qs:[
+    {id:"e1",  w:2, txt:"O candidato possui experiência em vendas?"},
+    {id:"e2",  w:2, txt:"Essa experiência está de acordo com a expectativa da vaga?"},
+    {id:"e3",  w:1, txt:"O candidato possui experiência em inside sales?"},
+    {id:"e4",  w:1, txt:"A experiência em inside sales está de acordo com a expectativa da vaga?"},
+    {id:"e5",  w:3, txt:"O candidato possui experiência como SDR?"},
+    {id:"e6",  w:3, txt:"A experiência como SDR está de acordo com a expectativa da vaga?"},
+    {id:"e7",  w:3, txt:"O candidato possui experiência em prospecção outbound?"},
+    {id:"e8",  w:3, txt:"A experiência em outbound está de acordo com a expectativa da vaga?"},
+    {id:"e9",  w:3, txt:"O candidato tem experiência com o segmento do cliente?"},
+    {id:"e10", w:3, txt:"A experiência com o segmento está de acordo com a expectativa da vaga?"},
+    {id:"e11", w:3, txt:"O candidato tem experiência com SPIN, GPCTBACI ou BANT?"},
+    {id:"e12", w:2, txt:"O candidato tem experiência com algum outro framework de vendas?"},
+    {id:"e13", w:3, txt:"O candidato tem experiência com Meetime ou Pipedrive?"},
+    {id:"e14", w:2, txt:"O candidato tem experiência com algum outro software de prospecção ou CRM?"},
+    {id:"e15", w:3, txt:"O candidato apresentou exemplos concretos e quantificados de resultados? (reuniões agendadas, taxa de conversão)", tag:"novo"},
+  ]},
+  { id:"dis", name:"Disciplina e Organização", weight:3, color:"#2563eb", qs:[
+    {id:"d1", w:1, txt:"O candidato tem experiência em trabalhar com processo de vendas estruturado?"},
+    {id:"d2", w:1, txt:"O candidato tem experiência com scripts de vendas? (emails, pitch, LinkedIn)"},
+    {id:"d3", w:2, txt:"O candidato usava esses scripts no dia a dia?"},
+    {id:"d4", w:2, txt:"O candidato tinha uma rotina diária estruturada?"},
+    {id:"d5", w:1, txt:"O candidato utiliza agenda ou software para organizar seus compromissos diários?"},
+    {id:"d6", w:2, txt:"O candidato utiliza checklist para organizar suas atividades diárias?"},
+    {id:"d7", w:2, txt:"O candidato apresentou organização na execução de atividades em atraso?"},
+  ]},
+  { id:"res", name:"Responsabilidade e Resiliência", weight:4, color:"#db2777", qs:[
+    {id:"r1", w:2, txt:"O candidato tem experiência em trabalhar com metas?"},
+    {id:"r2", w:2, txt:"O candidato tem experiência com metas de alta performance (>12% outbound ou >35% inbound)?"},
+    {id:"r3", w:2, txt:"O candidato tem experiência em trabalhar sob pressão?"},
+    {id:"r4", w:2, txt:"O candidato terceirizou erros/falhas para outras pessoas ou empresas anteriores?", inverted:true},
+    {id:"r5", w:2, txt:"O candidato era proativo na resolução de problemas imprevistos?"},
+    {id:"r6", w:2, txt:"O candidato demonstrou como lida com alto volume de rejeições diárias?", tag:"novo"},
+  ]},
+  { id:"apr", name:"Interesse no Aprendizado", weight:3, color:GM.yellow, qs:[
+    {id:"a1", w:1, txt:"O candidato demonstrou hábito de leitura/estudo?"},
+    {id:"a2", w:2, txt:"O candidato tem estudado sobre vendas?"},
+    {id:"a3", w:1, txt:"O candidato tem explicação clara e objetiva sobre o que aprendeu?"},
+  ]},
+  { id:"com", name:"Comunicação e Energia", weight:5, color:"#16a34a", qs:[
+    {id:"c1", w:3, txt:"O candidato possui dicção aceitável para a função de SDR?"},
+    {id:"c2", w:2, txt:"O candidato interrompeu enquanto outra pessoa estava falando durante a entrevista?", inverted:true},
+    {id:"c3", w:2, txt:"O candidato respondeu os questionamentos de forma clara e objetiva?"},
+    {id:"c4", w:2, txt:"O candidato apresentou animação/energia durante a entrevista?"},
+    {id:"c5", w:2, txt:"O candidato teve comportamento profissional durante a entrevista?"},
+  ]},
+];
+
+const DECS = [
+  {min:80, label:"Aprovado com destaque",     fg:"#166534", bg:"#dcfce7", action:"Indicar com prioridade; comunicar ao CS que é perfil forte"},
+  {min:75, label:"Aprovado dentro do perfil", fg:"#1e40af", bg:"#dbeafe", action:"Indicar normalmente"},
+  {min:60, label:"Aprovado condicional",       fg:"#92400e", bg:"#fef3c7", action:"Indicar com nota de atenção; comunicar ponto de desenvolvimento ao cliente"},
+  {min:0,  label:"Reprovado",                  fg:"#991b1b", bg:"#fee2e2", action:"Não indicar; enviar feedback ao candidato; hunting continua"},
+];
+
+const SENLEVELS = [
+  {level:"Sênior", fg:"#4f46e5", bg:"#ede9fe", desc:"Perfil autônomo com histórico de resultados acima da média e domínio de processo."},
+  {level:"Pleno",  fg:"#0369a1", bg:"#e0f2fe", desc:"Perfil com rodagem real em prospecção. Onboarding rápido com acompanhamento inicial."},
+  {level:"Junior", fg:"#15803d", bg:"#dcfce7", desc:"Perfil formável com boa base de disciplina e comunicação. Requer treinamento em processo."},
+];
+
+// ── SCORING ──────────────────────────────────────────────────────────────────
+function catScore(cat, ans) {
+  let pos=0, tot=0;
+  cat.qs.forEach(q => {
+    const v = ans[q.id]; if(!v||v==="na") return;
+    tot+=q.w; if(q.inverted?v==="nao":v==="sim") pos+=q.w;
+  });
+  return tot===0?null:(pos/tot)*100;
+}
+function finalScore(ans) {
+  let tw=0,ws=0;
+  CATS.forEach(c=>{const s=catScore(c,ans);if(s!==null){tw+=c.weight;ws+=c.weight*s;}});
+  return tw===0?null:ws/tw;
+}
+function getDec(s){if(s===null)return null;return DECS.find(d=>s>=d.min)||DECS[3];}
+function getSen(ans){
+  const s=id=>ans[id]==="sim";
+  if(!(s("c1")&&s("c4")&&s("d4")&&s("a2")))return null;
+  const p=[s("e3")||s("e5"),s("e7"),s("e11")||s("e12"),s("e13")||s("e14"),s("r1")].filter(Boolean).length;
+  const sr=[s("e5")&&s("e6"),s("e7")&&s("e8"),s("e9"),s("r2"),s("e11"),s("r5")].filter(Boolean).length;
+  if(p>=3&&sr>=4)return SENLEVELS[0];if(p>=3)return SENLEVELS[1];return SENLEVELS[2];
+}
+function fmt(v,d=1){return v===null?"—":v.toFixed(d);}
+
+// ── RADAR CHART ──────────────────────────────────────────────────────────────
+// 5 axes, center (100,100), R=75. Starting from top (-90°), +72° each.
+// Order: exp(top), com(TR), apr(BR), res(BL), dis(TL)
+const RADAR_CATS = ["exp","com","apr","res","dis"];
+const RADAR_NAMES = ["Experiência","Comunicação","Aprendizado","Resiliência","Disciplina"];
+const R = 75, CX = 110, CY = 105;
+const ANGLES = [-90,-18,54,126,198].map(d=>d*Math.PI/180);
+const FULL_PTS = ANGLES.map(a=>([CX+R*Math.cos(a), CY+R*Math.sin(a)]));
+
+function radarPts(catPctsMap, frac=1) {
+  return RADAR_CATS.map((id,i)=>{
+    const p = catPctsMap[id] || 0;
+    const r = (p/100)*R*frac;
+    return [CX+r*Math.cos(ANGLES[i]), CY+r*Math.sin(ANGLES[i])];
+  });
+}
+
+function ptsToStr(pts){ return pts.map(p=>p.map(v=>v.toFixed(1)).join(",")).join(" "); }
+
+const RADAR_SHORT = ["Experiência","Comunicação","Aprendizado","Resiliência","Disciplina"];
+
+function RadarChart({catPctsMap, size=220}){
+  const fracs = [0.25,0.5,0.75,1.0];
+  const pts = radarPts(catPctsMap);
+  const catColors = {exp:GM.orange,com:"#16a34a",apr:GM.yellow,res:"#db2777",dis:"#2563eb"};
+  // ViewBox wider to avoid label clipping: 0 0 310 230
+  return (
+    <svg width={size} height={size*(240/310)} viewBox="-15 -12 320 240" style={{overflow:"visible"}}>
+      {/* Grid */}
+      {fracs.map(f=>(
+        <polygon key={f} points={ptsToStr(FULL_PTS.map((pt,i)=>[CX+(pt[0]-CX)*f,CY+(pt[1]-CY)*f]))}
+          fill="none" stroke={f===1?"#e2e8f0":"#f1f5f9"} strokeWidth={f===1?"1":"0.8"}/>
+      ))}
+      {/* Axes */}
+      {FULL_PTS.map((pt,i)=>(
+        <line key={i} x1={CX} y1={CY} x2={pt[0]} y2={pt[1]} stroke="#e2e8f0" strokeWidth="0.8"/>
+      ))}
+      {/* Score area */}
+      <polygon points={ptsToStr(pts)} fill={GM.orange} fillOpacity="0.15" stroke={GM.orange} strokeWidth="2" strokeLinejoin="round"/>
+      {/* Score dots */}
+      {pts.map((pt,i)=>(
+        <circle key={i} cx={pt[0]} cy={pt[1]} r="4" fill={catColors[RADAR_CATS[i]]} stroke="white" strokeWidth="1.5"/>
+      ))}
+      {/* Labels — 2 lines: name + score */}
+      {FULL_PTS.map((pt,i)=>{
+        const ang = ANGLES[i];
+        const lx = CX+(R+26)*Math.cos(ang);
+        const ly = CY+(R+26)*Math.sin(ang);
+        const ta = Math.abs(Math.cos(ang))<0.15?"middle":Math.cos(ang)>0?"start":"end";
+        const pct = catPctsMap[RADAR_CATS[i]];
+        const isTop = i===0;
+        const yName = isTop ? ly-9 : ly-3;
+        const yScore = isTop ? ly+5 : ly+8;
+        return (
+          <g key={i}>
+            <text x={lx} y={yName} textAnchor={ta} fontSize="9" fontWeight="600" fill="#374151" fontFamily="Montserrat,sans-serif">
+              {RADAR_SHORT[i]}
+            </text>
+            <text x={lx} y={yScore} textAnchor={ta} fontSize="9.5" fontWeight="800" fill={catColors[RADAR_CATS[i]]} fontFamily="Montserrat,sans-serif">
+              {pct!==null?pct.toFixed(0)+"%":"—"}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+// ── RADAR SVG for report (pure string) ───────────────────────────────────────
+const RADAR_SHORT_ARR = ["Experiência","Comunicação","Aprendizado","Resiliência","Disciplina"];
+
+function radarChartHTML(catPctsMap) {
+  const fracs=[0.25,0.5,0.75,1.0];
+  const pts=radarPts(catPctsMap);
+  const catColors={exp:GM.orange,com:"#16a34a",apr:GM.yellow,res:"#db2777",dis:"#2563eb"};
+  const gridLines=fracs.map(f=>{
+    const gpts=FULL_PTS.map(pt=>[CX+(pt[0]-CX)*f,CY+(pt[1]-CY)*f]);
+    return `<polygon points="${ptsToStr(gpts)}" fill="none" stroke="${f===1?"#e2e8f0":"#f1f5f9"}" stroke-width="${f===1?1:0.7}"/>`;
+  }).join("");
+  const axes=FULL_PTS.map(pt=>`<line x1="${CX}" y1="${CY}" x2="${pt[0].toFixed(1)}" y2="${pt[1].toFixed(1)}" stroke="#e2e8f0" stroke-width="0.7"/>`).join("");
+  const area=`<polygon points="${ptsToStr(pts)}" fill="${GM.orange}" fill-opacity="0.15" stroke="${GM.orange}" stroke-width="2" stroke-linejoin="round"/>`;
+  const dots=pts.map((pt,i)=>`<circle cx="${pt[0].toFixed(1)}" cy="${pt[1].toFixed(1)}" r="5" fill="${catColors[RADAR_CATS[i]]}" stroke="white" stroke-width="1.5"/>`).join("");
+  const labels=FULL_PTS.map((pt,i)=>{
+    const ang=ANGLES[i];
+    const lx=(CX+(R+26)*Math.cos(ang)).toFixed(1);
+    const ly=(CY+(R+26)*Math.sin(ang)).toFixed(1);
+    const ta=Math.abs(Math.cos(ang))<0.15?"middle":Math.cos(ang)>0?"start":"end";
+    const pct=catPctsMap[RADAR_CATS[i]];
+    const isTop=i===0;
+    const yName=(parseFloat(ly)+(isTop?-9:-3)).toFixed(1);
+    const yScore=(parseFloat(ly)+(isTop?5:9)).toFixed(1);
+    return `<text x="${lx}" y="${yName}" text-anchor="${ta}" font-size="9" font-weight="600" fill="#374151" font-family="Montserrat,sans-serif">${RADAR_SHORT_ARR[i]}</text>
+    <text x="${lx}" y="${yScore}" text-anchor="${ta}" font-size="10" font-weight="800" fill="${catColors[RADAR_CATS[i]]}" font-family="Montserrat,sans-serif">${pct!==null?pct.toFixed(0)+"%":"—"}</text>`;
+  }).join("");
+  return `<svg width="300" height="258" viewBox="-15 -12 320 240" overflow="visible" xmlns="http://www.w3.org/2000/svg">${gridLines}${axes}${area}${dots}${labels}</svg>`;
+}
+
+// ── API call ──────────────────────────────────────────────────────────────────
+async function callAI(dados, catPcts, fs, dec, sen, best, worst, apiKey) {
+  const lines = CATS.map((c,i)=>`${c.name}: ${catPcts[i]!==null?catPcts[i].toFixed(1)+"%":"não avaliado"}`).join("; ");
+  const headers = {"Content-Type":"application/json"};
+  if(apiKey) headers["x-api-key"] = apiKey;
+  const r = await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST", headers,
+    body:JSON.stringify({
+      model:"claude-sonnet-4-20250514", max_tokens:1000,
+      messages:[{role:"user",content:`Você é especialista em recrutamento de SDR da Growth Machine. Feedback profissional em português para envio ao cliente.
+Candidato: ${dados.nome||"o candidato"} | Empresa: ${dados.empresa} | Perfil: ${dados.perfil||"SDR"}
+Avaliação: ${lines} | Nota: ${fs!==null?fs.toFixed(1)+"%":"pendente"} | Decisão: ${dec?.label||"pendente"} | Senioridade: ${sen?.level||"não determinada"} | Destaque: ${best?.name||"N/A"} | Aprimoramento: ${worst?.name||"N/A"}
+4 a 6 frases: pontos positivos da categoria com maior nota; atenção na com menor; justifique a senioridade; conclua com a decisão. Use o nome. Tom técnico e direto. SOMENTE o texto.`}]
+    })
+  });
+  const data = await r.json();
+  return data.content?.find(b=>b.type==="text")?.text || "";
+}
+
+const INIT = {nome:"",data:"",empresa:"",perfil:"",avaliador:""};
+
+// ── COMPONENT ────────────────────────────────────────────────────────────────
+function App() {
+  const [dados,  setDados]  = useState({...INIT});
+  const [ans,    setAns]    = useState({});
+  const [fb,     setFb]     = useState("");
+  const [status, setStatus] = useState("idle"); // idle | loading | done | error
+  const [openSec,setOS]     = useState({exp:true,dis:false,res:false,apr:false,com:false});
+  const [apiKey, setApiKey] = useState("");
+  const [showKey,setShowKey]= useState(false);
+
+  const setD  = k=>e=>setDados(d=>({...d,[k]:e.target.value}));
+  const setA  = (id,v)=>setAns(a=>({...a,[id]:v}));
+  const tog   = id=>setOS(s=>({...s,[id]:!s[id]}));
+  const reset = ()=>{
+    if(!window.confirm("Zerar todo o preenchimento?"))return;
+    setDados({...INIT});setAns({});setFb("");setStatus("idle");
+  };
+
+  const catPcts = CATS.map(c=>catScore(c,ans));
+  const fs  = finalScore(ans);
+  const dec = getDec(fs);
+  const sen = getSen(ans);
+  const totalQ=CATS.reduce((n,c)=>n+c.qs.length,0);
+  const answQ=Object.keys(ans).length;
+  const validC=CATS.map((c,i)=>({...c,pct:catPcts[i]})).filter(c=>c.pct!==null);
+  const best =validC.length?validC.reduce((a,b)=>b.pct>a.pct?b:a):null;
+  const worst=validC.length?validC.reduce((a,b)=>b.pct<a.pct?b:a):null;
+
+  const catPctsMap = Object.fromEntries(CATS.map((c,i)=>[c.id,catPcts[i]]));
+
+  const genFeedback = async()=>{
+    setStatus("loading");
+    try{
+      const text = await callAI(dados,catPcts,fs,dec,sen,best,worst,apiKey);
+      setFb(text); setStatus("done");
+      return text;
+    }catch(e){
+      setStatus("error");
+      setFb("Erro ao gerar feedback. Verifique sua chave de API ou escreva manualmente.");
+      return "";
+    }
+  };
+
+  const openReport = async()=>{
+    let feedbackText = fb;
+    if(!feedbackText.trim()){
+      setStatus("loading");
+      try{ feedbackText = await callAI(dados,catPcts,fs,dec,sen,best,worst,apiKey); setFb(feedbackText); setStatus("done"); }
+      catch{ setStatus("error"); feedbackText=""; }
+    }
+    buildAndOpenReport(feedbackText);
+  };
+
+  const buildAndOpenReport = (feedbackText)=>{
+    const catBars = CATS.map((c,i)=>{
+      const pct=catPcts[i]; const cd=getDec(pct);
+      return `<div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid #f3f4f6;">
+        <div style="width:200px;font-size:13px;color:#374151;font-weight:500;">${c.name}</div>
+
+        <div style="flex:1;height:10px;background:#e5e7eb;border-radius:99px;overflow:hidden;">
+          <div style="width:${(pct||0).toFixed(1)}%;height:100%;background:${c.color};border-radius:99px;"></div>
+        </div>
+        <div style="width:56px;text-align:right;font-size:14px;font-weight:700;color:${cd?.fg||c.color};">${fmt(pct)}%</div>
+      </div>`;
+    }).join("");
+
+    const detailSection = CATS.map(c=>`
+      <div style="margin-bottom:28px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid ${c.color}25;">
+          <div style="width:10px;height:10px;border-radius:50%;background:${c.color};flex-shrink:0;"></div>
+          <span style="font-size:13px;font-weight:700;color:#222223;">${c.name}</span>
+          <span style="font-size:11px;color:#9ca3af;">— ${fmt(catPcts[CATS.indexOf(c)])}%</span>
+        </div>
+        ${c.qs.map(q=>{
+          const v=ans[q.id];
+          const disp=!v?"—":v==="na"?"N/A":v==="sim"?"Sim":"Não";
+          const good=!v||v==="na"?null:(q.inverted?v==="nao":v==="sim");
+          const col=good===null?"#d1d5db":good?"#16a34a":"#dc2626";
+          const bg=good===null?"#f9fafb":good?"#f0fdf4":"#fef2f2";
+          return `<div style="display:flex;align-items:center;gap:12px;padding:6px 10px;border-radius:6px;margin-bottom:3px;background:${bg};">
+            <div style="flex:1;font-size:12px;color:#374151;line-height:1.4;">${q.inverted?"⚠ ":""}${q.txt}${q.tag?` <span style="font-size:10px;background:#FFF0E8;color:#F96500;padding:1px 5px;border-radius:99px;font-weight:600;">novo</span>`:""}</div>
+            <div style="min-width:36px;text-align:center;font-size:12px;font-weight:700;color:${col};background:white;padding:2px 8px;border-radius:99px;border:1px solid ${col}30;">${disp}</div>
+          </div>`;
+        }).join("")}
+      </div>`).join("");
+
+    const iconHtml = GM_ICON_SVG(40);
+    const iconSmHtml = GM_ICON_WHITE_SVG(28);
+    const radarSvg = radarChartHTML(catPctsMap);
+
+    const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Relatório Talent — ${dados.nome||"Candidato"}</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Montserrat',Arial,sans-serif;color:#222223;background:#f9fafb;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.noprint{display:block;}@media print{body{background:white;}.noprint{display:none!important;}.pb{page-break-before:always;}}</style>
+</head><body>
+<div style="max-width:840px;margin:0 auto;">
+
+  <!-- HEADER -->
+  <div style="background:#222223;padding:26px 40px;position:relative;overflow:hidden;">
+    <div style="position:absolute;right:-20px;top:-50px;opacity:0.1;pointer-events:none;">
+      <svg width="280" height="280" viewBox="0 0 280 280" fill="none"><rect x="2" y="140" width="195" height="195" rx="36" transform="rotate(-45 2 140)" stroke="#F96500" stroke-width="3" fill="none"/><rect x="44" y="140" width="135" height="135" rx="26" transform="rotate(-45 44 140)" stroke="#F96500" stroke-width="2" fill="none"/></svg>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;position:relative;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        ${iconSmHtml}
+        <div style="margin-left:2px;">
+          <div style="color:white;font-size:19px;font-weight:800;letter-spacing:-0.3px;">Growth Machine</div>
+          <div style="color:#F96500;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;margin-top:1px;">Relatório Talent SDR</div>
+        </div>
+      </div>
+      ${dec?`<div style="background:${dec.bg};color:${dec.fg};padding:7px 18px;border-radius:99px;font-size:12px;font-weight:700;">${dec.label}</div>`:""}
+    </div>
+  </div>
+  <div style="height:4px;background:linear-gradient(90deg,#F96500,#FF7D12);"></div>
+
+  <!-- CANDIDATE INFO -->
+  <div style="background:white;padding:18px 40px;border-bottom:1px solid #f3f4f6;">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;">
+      ${[["Candidato",dados.nome],["Data",dados.data],["Empresa",dados.empresa],["Perfil SDR",dados.perfil],["Avaliador(a)",dados.avaliador]].map(([l,v])=>`<div><div style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:3px;">${l}</div><div style="font-size:13px;font-weight:600;color:#222223;">${v||"—"}</div></div>`).join("")}
+    </div>
+  </div>
+
+  <!-- SCORE + DECISION + RADAR -->
+  <div style="background:white;padding:28px 40px;border-bottom:1px solid #f3f4f6;">
+    <div style="display:flex;gap:24px;align-items:flex-start;">
+
+      <!-- Score + badges -->
+      <div style="display:flex;flex-direction:column;gap:12px;flex:1;">
+        <div style="display:flex;gap:16px;align-items:stretch;">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:130px;flex-shrink:0;background:#222223;border-radius:14px;padding:20px 12px;">
+            <div style="font-size:50px;font-weight:900;color:#F96500;line-height:1;">${fs!==null?Math.round(fs):"—"}</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:3px;letter-spacing:0.5px;">DE 100</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+            ${dec?`<div style="padding:14px 18px;background:${dec.bg};border-radius:10px;border-left:4px solid ${dec.fg};flex:1;"><div style="font-size:10px;font-weight:700;color:${dec.fg};text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Decisão</div><div style="font-size:16px;font-weight:800;color:${dec.fg};">${dec.label}</div><div style="font-size:11px;color:${dec.fg};opacity:0.85;margin-top:4px;">${dec.action}</div></div>`:""}
+            ${sen?`<div style="padding:14px 18px;background:${sen.bg};border-radius:10px;border-left:4px solid ${sen.fg};flex:1;"><div style="font-size:10px;font-weight:700;color:${sen.fg};text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Senioridade indicada</div><div style="font-size:16px;font-weight:800;color:${sen.fg};">SDR ${sen.level}</div><div style="font-size:11px;color:${sen.fg};opacity:0.85;margin-top:4px;">${sen.desc}</div></div>`:`<div style="padding:14px 18px;background:#f9fafb;border-radius:10px;border-left:4px solid #d1d5db;flex:1;"><div style="font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Senioridade indicada</div><div style="font-size:13px;color:#9ca3af;">Dados insuficientes para determinar nível</div></div>`}
+          </div>
+        </div>
+      </div>
+
+      <!-- Radar Chart -->
+      <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;">
+        <div style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:8px;text-align:center;">Perfil de Competências</div>
+        ${radarSvg}
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY BARS -->
+  <div style="background:white;padding:26px 40px;border-bottom:1px solid #f3f4f6;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><div style="width:4px;height:18px;background:#F96500;border-radius:2px;"></div><h2 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#222223;">Resultado por categoria</h2></div>
+    ${catBars}
+  </div>
+
+  <!-- HIGHLIGHTS -->
+  <div style="padding:22px 40px;display:grid;grid-template-columns:1fr 1fr;gap:14px;background:white;border-bottom:1px solid #f3f4f6;">
+    <div style="padding:16px;background:#f0fdf4;border-radius:12px;border-top:3px solid #16a34a;"><div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Principal destaque</div><div style="font-size:15px;font-weight:800;color:#15803d;">${best?.name||"—"}</div>${best?.pct!=null?`<div style="font-size:11px;color:#16a34a;margin-top:3px;">${best.pct.toFixed(1)}% de aproveitamento</div>`:""}</div>
+    <div style="padding:16px;background:#fef2f2;border-radius:12px;border-top:3px solid #dc2626;"><div style="font-size:10px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Ponto de aprimoramento</div><div style="font-size:15px;font-weight:800;color:#b91c1c;">${worst?.name||"—"}</div>${worst?.pct!=null?`<div style="font-size:11px;color:#dc2626;margin-top:3px;">${worst.pct.toFixed(1)}% de aproveitamento</div>`:""}</div>
+  </div>
+
+  <!-- FEEDBACK -->
+  ${feedbackText?`<div style="background:white;padding:26px 40px;border-bottom:1px solid #f3f4f6;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><div style="width:4px;height:18px;background:#F96500;border-radius:2px;"></div><h2 style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#222223;">Análise do avaliador</h2></div>
+    <div style="padding:18px 22px;background:#fafafa;border-radius:12px;border-left:4px solid #F96500;font-size:13px;line-height:1.85;color:#374151;">${feedbackText.replace(/\n/g,"<br>")}</div>
+  </div>`:""}
+
+  <!-- FOOTER -->
+  <div style="background:#222223;padding:18px 40px;display:flex;align-items:center;gap:10px;">
+    ${iconSmHtml}<span style="color:white;font-size:12px;font-weight:600;margin-left:8px;">Growth Machine</span>
+    <span style="color:rgba(255,255,255,0.35);font-size:11px;margin-left:auto;">Gerado em ${new Date().toLocaleString("pt-BR")} · Avaliador: ${dados.avaliador||"—"}</span>
+  </div>
+
+  <!-- PAGE 2: DETAIL -->
+  <div class="pb" style="background:white;">
+    <div style="background:#222223;padding:18px 40px;display:flex;align-items:center;gap:10px;">${iconSmHtml}<div style="margin-left:8px;"><div style="color:#F96500;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;">Relatório Talent SDR</div><div style="color:white;font-size:13px;font-weight:700;">${dados.nome||"Candidato"} — Detalhamento técnico</div></div></div>
+    <div style="height:4px;background:linear-gradient(90deg,#F96500,#FF7D12);"></div>
+    <div style="padding:28px 40px;"><p style="font-size:11px;color:#9ca3af;margin-bottom:22px;">⚠ indica questões com resposta invertida (Não = resposta positiva)</p>${detailSection}</div>
+  </div>
+
+  <!-- PRINT BUTTON -->
+  <div class="noprint" style="background:white;padding:22px 40px;display:flex;gap:12px;justify-content:center;border-top:1px solid #f3f4f6;">
+    <button onclick="window.print()" style="padding:12px 32px;background:#F96500;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;">Imprimir / Salvar como PDF</button>
+    <button onclick="window.close()" style="padding:12px 20px;color:#6b7280;border:1px solid #e5e7eb;border-radius:8px;font-size:14px;cursor:pointer;background:transparent;font-family:'Montserrat',sans-serif;">Fechar</button>
+  </div>
+</div></body></html>`;
+
+    try{
+      const blob=new Blob([html],{type:"text/html"});
+      const url=URL.createObjectURL(blob);
+      const w=window.open(url,"_blank");
+      if(!w) alert("Pop-up bloqueado. Permita pop-ups e tente novamente.");
+    }catch{ alert("Não foi possível abrir o relatório."); }
+  };
+
+  // ── Render ──────────────────────────────────────────────────────────────
+  const AnsBtn=({id,inverted})=>(
+    <div style={{display:"flex",gap:4,marginTop:8}}>
+      {[["sim","Sim",true],["nao","Não",false],["na","N/A",null]].map(([v,label,good])=>{
+        const sel=ans[id]===v;
+        const pos=inverted?v==="nao":v==="sim";
+        let bg="transparent",bd="#d1d5db",col="#6b7280";
+        if(sel){if(v==="na"){bg="#6366f1";col="#fff";bd="#6366f1";}else if(pos){bg="#16a34a";col="#fff";bd="#16a34a";}else{bg="#dc2626";col="#fff";bd="#dc2626";}}
+        return <button key={v} onClick={()=>setA(id,v)}
+          style={{padding:"5px 14px",fontSize:12,fontWeight:sel?600:400,border:`1.5px solid ${bd}`,borderRadius:6,background:bg,color:col,cursor:"pointer",transition:"all 0.12s"}}>
+          {label}
+        </button>;
+      })}
+    </div>
+  );
+
+  return (
+    <div style={{display:"flex",minHeight:"100vh",background:"#f1f5f9"}}>
+
+      {/* ── FORM ────────────────────────────────────────────────────────── */}
+      <div style={{flex:1,padding:20,overflowY:"auto",maxWidth:700}}>
+
+        {/* Topbar */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,padding:"14px 18px",background:"white",borderRadius:12,border:"1px solid #e2e8f0"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <div dangerouslySetInnerHTML={{__html:GM_ICON_SVG(32)}}/>
+            <div>
+              <div style={{fontSize:15,fontWeight:700,color:GM.dark}}>Relatório Talent SDR</div>
+              <div style={{fontSize:11,color:"#9ca3af"}}>Growth Machine</div>
+            </div>
+          </div>
+          <div style={{display:"flex",gap:8,alignItems:"center"}}>
+            <button onClick={()=>setShowKey(k=>!k)}
+              title="Configurar chave de API"
+              style={{padding:"6px 10px",borderRadius:7,border:"1px solid #e2e8f0",background:"white",fontSize:12,color:"#9ca3af",cursor:"pointer"}}>
+              ⚙
+            </button>
+            <button onClick={reset}
+              style={{padding:"7px 14px",borderRadius:8,border:"1px solid #e2e8f0",background:"white",fontSize:12,color:"#6b7280",cursor:"pointer"}}>
+              ↺ Zerar
+            </button>
+          </div>
+        </div>
+
+        {/* API Key settings */}
+        {showKey&&(
+          <div style={{background:"white",borderRadius:12,border:"1px solid #e2e8f0",padding:"14px 18px",marginBottom:10}}>
+            <p style={{fontSize:12,color:"#6b7280",marginBottom:8}}>Chave Anthropic API (necessária para geração de análise com IA neste arquivo HTML):</p>
+            <input type="password" value={apiKey} onChange={e=>setApiKey(e.target.value)}
+              placeholder="sk-ant-..." style={{width:"100%",padding:"8px 10px",borderRadius:7,border:"1px solid #e2e8f0",background:"white",fontSize:13,color:GM.dark}}/>
+            <p style={{fontSize:11,color:"#9ca3af",marginTop:6}}>A chave não é salva. Ficará disponível apenas durante esta sessão.</p>
+          </div>
+        )}
+
+        {/* Progress */}
+        <div style={{marginBottom:12,padding:"10px 14px",background:"white",borderRadius:10,border:"1px solid #e2e8f0"}}>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+            <span style={{fontSize:12,color:"#6b7280"}}>Progresso</span>
+            <span style={{fontSize:12,fontWeight:600,color:GM.dark}}>{answQ}/{totalQ} perguntas</span>
+          </div>
+          <div style={{height:5,background:"#e2e8f0",borderRadius:3}}>
+            <div style={{height:5,width:`${(answQ/totalQ)*100}%`,background:GM.orange,borderRadius:3,transition:"width 0.3s"}}/>
+          </div>
+        </div>
+
+        {/* Dados */}
+        <div style={{background:"white",borderRadius:12,border:"1px solid #e2e8f0",padding:"16px 18px",marginBottom:10}}>
+          <h2 style={{fontSize:13,fontWeight:600,color:GM.dark,marginBottom:12}}>Dados da entrevista</h2>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            {[{k:"nome",label:"Nome do candidato",full:true},{k:"data",label:"Data",type:"date"},{k:"empresa",label:"Empresa cliente"},{k:"perfil",label:"Perfil do SDR"},{k:"avaliador",label:"Avaliador(a)"}].map(f=>(
+              <div key={f.k} style={{gridColumn:f.full?"1/-1":undefined}}>
+                <label style={{display:"block",fontSize:11,color:"#6b7280",marginBottom:3,fontWeight:500}}>{f.label}</label>
+                <input type={f.type||"text"} value={dados[f.k]} onChange={setD(f.k)}
+                  style={{width:"100%",padding:"8px 10px",borderRadius:7,border:"1px solid #e2e8f0",fontSize:13,color:GM.dark}}/>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Categories */}
+        {CATS.map((cat,ci)=>(
+          <div key={cat.id} style={{background:"white",borderRadius:12,border:"1px solid #e2e8f0",marginBottom:10,overflow:"hidden"}}>
+            <button onClick={()=>tog(cat.id)}
+              style={{width:"100%",padding:"13px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",background:"none",border:"none",cursor:"pointer"}}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <div style={{width:10,height:10,borderRadius:"50%",background:cat.color,flexShrink:0}}/>
+                <span style={{fontSize:14,fontWeight:600,color:GM.dark}}>{cat.name}</span>
+                
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                {catPcts[ci]!==null&&<span style={{fontSize:13,fontWeight:600,color:catPcts[ci]>=75?"#16a34a":catPcts[ci]>=60?"#d97706":"#dc2626"}}>{catPcts[ci].toFixed(1)}%</span>}
+                <span style={{color:"#9ca3af",fontSize:11}}>{openSec[cat.id]?"▲":"▼"}</span>
+              </div>
+            </button>
+            {openSec[cat.id]&&(
+              <div style={{padding:"4px 18px 16px",borderTop:"1px solid #f3f4f6"}}>
+                {cat.qs.map((q,qi)=>(
+                  <div key={q.id} style={{paddingTop:10,paddingBottom:10,borderBottom:qi<cat.qs.length-1?"1px solid #f9fafb":"none"}}>
+                    <div style={{display:"flex",alignItems:"flex-start",gap:0}}>
+                      
+                      <div style={{flex:1}}>
+                        <p style={{fontSize:13,color:"#374151",lineHeight:1.45,margin:0}}>{q.txt}</p>
+                        <div style={{display:"flex",gap:6,marginTop:3,flexWrap:"wrap"}}>
+                          {q.inverted&&<span style={{fontSize:10,color:"#d97706",fontStyle:"italic"}}>Resposta positiva = Não</span>}
+                          {q.tag&&<span style={{fontSize:10,color:GM.orange,fontWeight:600,background:"#FFF0E8",padding:"0 5px",borderRadius:3}}>novo critério</span>}
+                        </div>
+                      </div>
+                    </div>
+                    <AnsBtn id={q.id} inverted={q.inverted}/>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+
+        {/* Feedback */}
+        <div style={{background:"white",borderRadius:12,border:"1px solid #e2e8f0",padding:"16px 18px",marginBottom:10}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+            <h2 style={{fontSize:13,fontWeight:600,color:GM.dark,margin:0}}>Análise do avaliador</h2>
+            <button onClick={genFeedback} disabled={status==="loading"}
+              style={{padding:"7px 16px",borderRadius:8,border:"none",background:status==="loading"?"#e0e7ff":GM.orange,color:status==="loading"?"#6366f1":"#fff",fontSize:12,fontWeight:700,cursor:status==="loading"?"wait":"pointer"}}>
+              {status==="loading"?"Gerando...":"✦ Gerar com IA"}
+            </button>
+          </div>
+          {status==="loading"&&!fb&&(
+            <div style={{padding:"12px",background:"#fff7ed",borderRadius:8,marginBottom:8,fontSize:12,color:GM.orange,fontWeight:500}}>
+              ⏳ Gerando análise com IA...
+            </div>
+          )}
+          <textarea value={fb} onChange={e=>setFb(e.target.value)}
+            placeholder="Clique em '✦ Gerar com IA' ou escreva manualmente. A análise também é gerada automaticamente ao clicar em 'Gerar relatório'."
+            rows={5} style={{width:"100%",padding:"10px 12px",borderRadius:8,border:"1px solid #e2e8f0",fontSize:13,color:"#374151",resize:"vertical",lineHeight:1.65}}/>
+        </div>
+
+        <button onClick={openReport} disabled={status==="loading"}
+          style={{width:"100%",padding:14,borderRadius:12,border:"none",
+            background:status==="loading"?"#fed7aa":GM.orange,
+            color:"#fff",fontSize:14,fontWeight:700,cursor:status==="loading"?"wait":"pointer",marginBottom:24}}>
+          {status==="loading"?"Gerando análise e relatório...":"Gerar relatório para o cliente"}
+        </button>
+      </div>
+
+      {/* ── SCORE PANEL ──────────────────────────────────────────────────── */}
+      <div style={{width:290,padding:"20px 14px",background:"white",borderLeft:"1px solid #e2e8f0",position:"sticky",top:0,height:"100vh",overflowY:"auto"}}>
+
+        {/* Score */}
+        <div style={{textAlign:"center",padding:"16px 12px",background:GM.dark,borderRadius:12,marginBottom:12}}>
+          <div style={{fontSize:42,fontWeight:800,color:GM.orange,lineHeight:1}}>{fs!==null?Math.round(fs):"—"}</div>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.4)",marginTop:3,letterSpacing:"0.5px"}}>NOTA FINAL</div>
+          {dec&&<div style={{fontSize:11,color:GM.orange,marginTop:5,fontWeight:600,lineHeight:1.3}}>{dec.label}</div>}
+        </div>
+
+        {/* Seniority */}
+        {sen&&<div style={{padding:"9px 11px",background:sen.bg,borderRadius:10,marginBottom:12,borderLeft:`3px solid ${sen.fg}`}}>
+          <p style={{fontSize:9,color:sen.fg,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.5px",margin:0}}>Senioridade</p>
+          <p style={{fontSize:13,color:sen.fg,fontWeight:700,margin:"2px 0 0"}}>SDR {sen.level}</p>
+        </div>}
+
+        {/* Radar chart */}
+        <div style={{background:"#f9fafb",borderRadius:12,padding:"10px 6px 4px",marginBottom:12,border:"1px solid #e2e8f0"}}>
+          <p style={{fontSize:10,color:"#9ca3af",textTransform:"uppercase",letterSpacing:"0.5px",margin:"0 0 4px",textAlign:"center"}}>Perfil de Competências</p>
+          <div style={{display:"flex",justifyContent:"center"}}>
+            <RadarChart catPctsMap={catPctsMap} size={240}/>
+          </div>
+        </div>
+
+        {/* Category bars */}
+        <p style={{fontSize:10,color:"#9ca3af",textTransform:"uppercase",letterSpacing:"0.5px",margin:"0 0 10px"}}>Por categoria</p>
+        {CATS.map((c,i)=>{
+          const p=catPcts[i];
+          return <div key={c.id} style={{marginBottom:9}}>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
+              <span style={{fontSize:11,color:"#6b7280",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:170}}>{c.name}</span>
+              <span style={{fontSize:11,fontWeight:600,color:p===null?"#9ca3af":p>=75?"#16a34a":p>=60?"#d97706":"#dc2626"}}>{fmt(p)}</span>
+            </div>
+            <div style={{height:4,background:"#e2e8f0",borderRadius:3}}>
+              <div style={{height:4,width:`${p||0}%`,background:c.color,borderRadius:3,transition:"width 0.3s"}}/>
+            </div>
+          </div>;
+        })}
+
+        {/* Highlights */}
+        {(best||worst)&&<div style={{marginTop:10}}>
+          {best&&<div style={{padding:"7px 10px",background:"#f0fdf4",borderRadius:8,borderLeft:"3px solid #16a34a",marginBottom:7}}>
+            <p style={{fontSize:9,color:"#166534",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.5px",margin:0}}>Destaque</p>
+            <p style={{fontSize:11,color:"#15803d",fontWeight:600,margin:"2px 0 0"}}>{best.name}</p>
+          </div>}
+          {worst&&<div style={{padding:"7px 10px",background:"#fef2f2",borderRadius:8,borderLeft:"3px solid #dc2626"}}>
+            <p style={{fontSize:9,color:"#991b1b",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.5px",margin:0}}>Aprimorar</p>
+            <p style={{fontSize:11,color:"#b91c1c",fontWeight:600,margin:"2px 0 0"}}>{worst.name}</p>
+          </div>}
+        </div>}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
