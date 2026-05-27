@@ -1,5 +1,1 @@
-{
-  "rewrites": [
-    { "source": "/api/ai", "destination": "/api/ai.js" }
-  ]
-}
+{}
