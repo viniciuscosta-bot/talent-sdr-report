@@ -20,6 +20,29 @@
 </head>
 <body>
 <div id="root"></div>
+<script>
+window.callAI = async function(dados, catPcts, fs, dec, sen, best, worst) {
+  var catNames = ["Experiência","Disciplina e Organização","Responsabilidade e Resiliência","Interesse no Aprendizado","Comunicação e Energia"];
+  var lines = catNames.map(function(name, i) {
+    return name + ": " + (catPcts[i] !== null ? catPcts[i].toFixed(1) + "%" : "não avaliado");
+  }).join("; ");
+  var prompt = "Você é especialista em recrutamento de SDR da Growth Machine. Feedback profissional em português para envio ao cliente.\n" +
+    "Candidato: " + (dados.nome || "o candidato") + " | Empresa: " + dados.empresa + " | Perfil: " + (dados.perfil || "SDR") + "\n" +
+    "Avaliação: " + lines + " | Nota: " + (fs !== null ? fs.toFixed(1) + "%" : "pendente") + " | Decisão: " + ((dec && dec.label) || "pendente") + " | Senioridade: " + ((sen && sen.level) || "não determinada") + " | Destaque: " + ((best && best.name) || "N/A") + " | Aprimoramento: " + ((worst && worst.name) || "N/A") + "\n" +
+    "4 a 6 frases: pontos positivos da categoria com maior nota; atenção na com menor; justifique a senioridade; conclua com a decisão. Use o nome. Tom técnico e direto. SOMENTE o texto.";
+  var r = await fetch("/api/ai", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+  var data = await r.json();
+  return (data.content && data.content.find(function(b){ return b.type === "text"; }) && data.content.find(function(b){ return b.type === "text"; }).text) || "";
+};
+</script>
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
 
@@ -220,7 +243,7 @@ function radarChartHTML(catPctsMap) {
 // ── API call ──────────────────────────────────────────────────────────────────
 async function callAI(dados, catPcts, fs, dec, sen, best, worst) {
   const lines = CATS.map((c,i)=>`${c.name}: ${catPcts[i]!==null?catPcts[i].toFixed(1)+"%":"não avaliado"}`).join("; ");
-  const r = await window.fetch("/api/ai", {
+  const r = await fetch("/api/ai", {
     method:"POST",
     headers: {"Content-Type":"application/json"},
     body:JSON.stringify({
@@ -269,7 +292,7 @@ function App() {
   const genFeedback = async()=>{
     setStatus("loading");
     try{
-      const text = await callAI(dados,catPcts,fs,dec,sen,best,worst);
+      const text = await window.callAI(dados,catPcts,fs,dec,sen,best,worst);
       setFb(text); setStatus("done");
       return text;
     }catch(e){
@@ -283,7 +306,7 @@ function App() {
     let feedbackText = fb;
     if(!feedbackText.trim()){
       setStatus("loading");
-      try{ feedbackText = await callAI(dados,catPcts,fs,dec,sen,best,worst); setFb(feedbackText); setStatus("done"); }
+      try{ feedbackText = await window.callAI(dados,catPcts,fs,dec,sen,best,worst); setFb(feedbackText); setStatus("done"); }
       catch{ setStatus("error"); feedbackText=""; }
     }
     buildAndOpenReport(feedbackText);
