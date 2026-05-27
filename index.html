@@ -46,7 +46,7 @@ input[type=text],input[type=date]{width:100%;padding:8px 10px;border-radius:7px;
 .full{grid-column:1/-1;}
 .tag-novo{font-size:10px;color:#F96500;font-weight:600;background:#FFF0E8;padding:0 5px;border-radius:3px;}
 .tag-inv{font-size:10px;color:#d97706;font-style:italic;}
-.feedback-area{width:100%;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;font-size:13px;color:#374151;line-height:1.65;min-height:100px;}
+.feedback-area{width:100%;padding:12px 14px;border-radius:8px;border:1px solid #e2e8f0;background:#f9fafb;font-size:13px;color:#374151;line-height:1.65;white-space:pre-wrap;}
 .sen-badge{padding:9px 11px;border-radius:10px;margin-bottom:12px;}
 .highlight-card{padding:7px 10px;border-radius:8px;margin-bottom:7px;}
 </style>
@@ -260,12 +260,11 @@ async function callAI() {
     "Avaliação: "+lines+" | Nota: "+(fs!==null?fs.toFixed(1)+"%":"pendente")+" | Decisão: "+((dec&&dec.label)||"pendente")+" | Senioridade: "+((sen&&sen.level)||"não determinada")+" | Destaque: "+((best&&best.name)||"N/A")+" | Aprimoramento: "+((worst&&worst.name)||"N/A")+"\n"+
     "4 a 6 frases: pontos positivos da categoria com maior nota; atenção na com menor; justifique a senioridade; conclua com a decisão. Use o nome. Tom técnico e direto. SOMENTE o texto.";
 
-  var url = "https://sdr-proxy.vinicius-costa.workers.dev";
-  var response = await fetch(url, {
+  var response = await fetch("/api/ai", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 1000,
       messages: [{role:"user", content:prompt}]
     })
@@ -434,13 +433,16 @@ function renderForm() {
   html += '<div class="card card-body" style="margin-bottom:10px">';
   html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
   html += '<h2 style="font-size:13px;font-weight:600;color:#222223;margin:0">Análise do avaliador</h2>';
-  html += '<button class="btn btn-ai" id="btnAI" '+(state.status==="loading"?"disabled":"")+'>'+
-    (state.status==="loading"?"Gerando...":"✦ Gerar com IA")+'</button>';
+  var aiDisabled = (state.status==="loading" || state.status==="done");
+  var aiLabel = state.status==="loading" ? "Gerando..." : (state.status==="done" ? "✓ Gerado" : "✦ Gerar com IA");
+  html += '<button class="btn btn-ai" id="btnAI" '+(aiDisabled?"disabled":"")+'>'+aiLabel+'</button>';
   html += '</div>';
-  if (state.status==="loading" && !state.fb) {
+  if (state.status==="loading") {
     html += '<div style="padding:12px;background:#fff7ed;border-radius:8px;margin-bottom:8px;font-size:12px;color:#F96500;font-weight:500">⏳ Gerando análise com IA...</div>';
   }
-  html += '<textarea class="feedback-area" id="fbArea" rows="5" placeholder="Clique em \'✦ Gerar com IA\' ou escreva manualmente.">'+escHtml(state.fb)+'</textarea>';
+  if (state.fb) {
+    html += '<div class="feedback-area">'+escHtml(state.fb)+'</div>';
+  }
   html += '</div>';
 
   // Report button
@@ -497,12 +499,6 @@ function bindEvents() {
     });
   });
 
-  // Feedback textarea
-  var fbArea = document.getElementById("fbArea");
-  if (fbArea) fbArea.addEventListener("input", function() {
-    state.fb = this.value;
-  });
-
   // AI button
   var btnAI = document.getElementById("btnAI");
   if (btnAI) btnAI.addEventListener("click", async function() {
@@ -513,7 +509,7 @@ function bindEvents() {
       state.fb = text;
       state.status = "done";
     } catch(e) {
-      state.status = "error";
+      state.status = "idle";
       state.fb = "Erro ao gerar feedback. Tente novamente.";
     }
     render();
