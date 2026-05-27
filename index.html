@@ -260,7 +260,7 @@ async function callAI() {
     "Avaliação: "+lines+" | Nota: "+(fs!==null?fs.toFixed(1)+"%":"pendente")+" | Decisão: "+((dec&&dec.label)||"pendente")+" | Senioridade: "+((sen&&sen.level)||"não determinada")+" | Destaque: "+((best&&best.name)||"N/A")+" | Aprimoramento: "+((worst&&worst.name)||"N/A")+"\n"+
     "4 a 6 frases: pontos positivos da categoria com maior nota; atenção na com menor; justifique a senioridade; conclua com a decisão. Use o nome. Tom técnico e direto. SOMENTE o texto.";
 
-  var url = "https://talent-sdr-proxy.vinicius-costa.workers.dev";
+  var url = "https://sdr-proxy.vinicius-costa.workers.dev";
   var response = await fetch(url, {
     method: "POST",
     headers: {"Content-Type": "application/json"},
