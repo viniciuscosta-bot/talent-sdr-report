@@ -220,7 +220,7 @@ function radarChartHTML(catPctsMap) {
 // ── API call ──────────────────────────────────────────────────────────────────
 async function callAI(dados, catPcts, fs, dec, sen, best, worst) {
   const lines = CATS.map((c,i)=>`${c.name}: ${catPcts[i]!==null?catPcts[i].toFixed(1)+"%":"não avaliado"}`).join("; ");
-  const r = await fetch("/api/ai", {
+  const r = await window.fetch("/api/ai", {
     method:"POST",
     headers: {"Content-Type":"application/json"},
     body:JSON.stringify({
